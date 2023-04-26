@@ -7,7 +7,7 @@
 ### Demo
 - E-mail sent after protective stop was set.
     
-  <kbd>![image](https://user-images.githubusercontent.com/80125540/234461086-f7dec77f-ed1b-4979-bc1c-6c82e09695e2.png)</kbd>
+  <kbd>![ezgif com-gif-maker (10)](https://user-images.githubusercontent.com/80125540/234635518-7c9786df-d0c0-4dee-b254-bef8ffe7eff3.gif)</kbd>
 
 ## Setup
 
@@ -41,6 +41,7 @@
         recipients=["recipient2@example.com", "recipient2@example.com"]
     )
    ```
+
 
 5. Run the program with the following command using your robot's IPv4:
    
