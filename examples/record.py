@@ -85,7 +85,7 @@ def send_safety_notification(safety_data, email_sender):
                         <p>A safety related stop has occurred.
                         {safety_dict_html}</p>
                         ''')
-    # email_sender.send_email(message)
+    email_sender.send_email(message)
 
     print("Notification sent.")
 
