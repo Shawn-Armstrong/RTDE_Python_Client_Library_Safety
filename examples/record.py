@@ -31,6 +31,48 @@ import rtde.rtde as rtde
 import rtde.rtde_config as rtde_config
 import rtde.csv_writer as csv_writer
 import rtde.csv_binary_writer as csv_binary_writer
+import EmailSender as es
+import datetime
+
+max_messages = 1
+current_messages = 0
+
+email_sender = es.EmailSender(
+    smtp_host="smtp.gmail.com",
+    smtp_port=587,
+    username='<SENDER_EMAIL>@gmail.com',
+    password='<YOUR_APP_PASSWORD>', # NOT your ordinary sign-in password; look at email-sender README.md.
+    recipients=["recipient2@example.com", "recipient2@example.com"]
+)
+
+def safety_status_bits_to_dict(value):
+    
+    safety_conditions = [
+        "Is normal mode",
+        "Is reduced mode",
+        "Is protective stopped",
+        "Is recovery mode",
+        "Is safeguard stopped",
+        "Is system emergency stopped",
+        "Is robot emergency stopped",
+        "Is emergency stopped",
+        "Is violation",
+        "Is fault",
+        "Is stopped due to safety"
+    ]
+    
+    safety_dict = {}
+    for i, condition in enumerate(safety_conditions):
+        safety_dict[condition] = bool(value & (1 << i))
+    
+    return safety_dict
+
+def safety_dict_to_html(safety_dict):
+    html_lines = []
+    for key, value in safety_dict.items():
+        html_lines.append(f"<p>{key}: {value}</p>")
+    return "\n".join(html_lines)
+
 
 # parameters
 parser = argparse.ArgumentParser()
@@ -118,9 +160,24 @@ with open(args.output, writeModes) as csvfile:
                 state = con.receive_buffered(args.binary)
             else:
                 state = con.receive(args.binary)
-            if state is not None:
-                writer.writerow(state)
+
+            safety_data = safety_status_bits_to_dict(state.safety_status_bits)
+            
+            if safety_data["Is normal mode"] == False and current_messages < max_messages:
+                safety_dict_html = safety_dict_to_html(safety_data)
+                current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                message = email_sender.create_message(
+                                    subject=f"RTDE NOTIFICATION: {current_time}", 
+                                    html_content= f'''
+                                    <h1>ROBOT RTDE WARNING</h1>
+                                    <p>A safety related stop has occurred.
+                                    {safety_dict_html}</p>
+                                    ''')
+                email_sender.send_email(message)
+                print("Notification sent.")
+                current_messages += 1
                 i += 1
+                sys.exit() 
 
         except KeyboardInterrupt:
             keep_running = False
