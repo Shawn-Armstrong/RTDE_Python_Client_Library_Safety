@@ -14,6 +14,7 @@
 ### Requirements
 - Python
 - Gmail account
+- Git
 
 ### Instructions
 
@@ -26,7 +27,7 @@
 3. Clone this repository into a directory of your choice with the following command:
      
    ```Console
-   https://github.com/Shawn-Armstrong/RTDE_Python_Client_Library_Safety.git
+   git clone https://github.com/Shawn-Armstrong/RTDE_Python_Client_Library_Safety.git
    ```
    
 4. In `../examples/record.py` at the top, add your email related information.
